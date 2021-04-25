@@ -7,4 +7,6 @@
     <string name="title_map">Map</string>
     <string name="title_settings">Settings</string>
     <string name="mapbox_access_token">pk.eyJ1IjoibWV0aHVzYWxlaCIsImEiOiJja254NWM4bDkxMzl5Mm9vYXVtMmpxbDNmIn0.Y-3CGPYTIdw1JzhgzLAoVg</string>
+    <string name="location_permission_explanation">Allow this app to access your loaction?</string>
+    <string name="location_permission_not_granted">You have to give acces</string>
 </resources>
