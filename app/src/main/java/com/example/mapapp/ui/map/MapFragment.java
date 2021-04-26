@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.mapapp.MainActivity;
 import com.example.mapapp.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.mapboxsdk.Mapbox;
@@ -96,6 +97,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Permiss
                 });
     }
 
+    public void goToUsersLocation() {
+        LocationComponent locationComponent = mapboxMap.getLocationComponent();
+        double lat = locationComponent.getLastKnownLocation().getLatitude();
+        double lng = locationComponent.getLastKnownLocation().getLongitude();
+        CameraPosition position = new CameraPosition.Builder()
+                .target(new LatLng(lat, lng))
+                .zoom(15)
+                .tilt(20)
+                .build();
+        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000);
+    }
+
     @SuppressWarnings({"MissingPermission"})
     private void enableLocationComponent(@NonNull Style loadedMapStyle) {
         if (PermissionsManager.areLocationPermissionsGranted(getContext())) {
@@ -106,14 +119,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Permiss
             locationComponent.setLocationComponentEnabled(true);
             locationComponent.setCameraMode(CameraMode.TRACKING);
             locationComponent.setRenderMode(RenderMode.COMPASS);
-            double lat = locationComponent.getLastKnownLocation().getLatitude();
-            double lng = locationComponent.getLastKnownLocation().getLongitude();
-            CameraPosition position = new CameraPosition.Builder()
-                    .target(new LatLng(lat, lng))
-                    .zoom(15)
-                    .tilt(20)
-                    .build();
-            mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000);
+            FloatingActionButton myLocation = getActivity().findViewById(R.id.floatingActionButton6);
+            myLocation.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    goToUsersLocation();
+                }
+            });
+            goToUsersLocation();
         } else {
             permissionsManager = new PermissionsManager(this);
             permissionsManager.requestLocationPermissions(getActivity());
