@@ -6,7 +6,9 @@
     <string name="title_bookmark">Bookmark</string>
     <string name="title_map">Map</string>
     <string name="title_settings">Settings</string>
-    <string name="mapbox_access_token">pk.eyJ1IjoibWV0aHVzYWxlaCIsImEiOiJja254NWM4bDkxMzl5Mm9vYXVtMmpxbDNmIn0.Y-3CGPYTIdw1JzhgzLAoVg</string>
+    <string name="mapbox_access_token">sk.eyJ1IjoibWV0aHVzYWxlaCIsImEiOiJja254NXlqeGQxM2pxMnBuam1xbXZjYnZjIn0.VMRVou-KyyslhJefIYI3Cg</string>
     <string name="location_permission_explanation">Allow this app to access your loaction?</string>
-    <string name="location_permission_not_granted">You have to give acces</string>
+    <string name="location_permission_not_granted">You have to give access</string>
+    <string name="location_name">Location name:</string>
+    <string name="save">Save</string>
 </resources>
