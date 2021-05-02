@@ -1,28 +1,24 @@
 package com.example.mapapp.ui.map;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
-import android.content.pm.PackageManager;
+import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.mapapp.MainActivity;
 import com.example.mapapp.R;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
@@ -40,18 +36,19 @@ import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
-
-import kotlin.Suppress;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, PermissionsListener {
 
     private PermissionsManager permissionsManager;
     private MapboxMap mapboxMap;
     private MapView mapView;
+    private FloatingActionButton myLocation;
     private ThreadPoolExecutor threadPoolExecutor;
+    private EditText searchBar;
+    private RecyclerView suggestedLocations;
+    private ImageButton searchButton;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -64,6 +61,45 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Permiss
         threadPoolExecutor.execute(() -> mapView.getMapAsync(this));
         return fragmentlayout;
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        myLocation = getActivity().findViewById(R.id.floatingActionButton6);
+        suggestedLocations = getActivity().findViewById(R.id.recycler);
+        searchButton = getActivity().findViewById(R.id.imageButton3);
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                performSearch();
+            }
+        });
+        myLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                goToUsersLocation();
+            }
+        });
+        searchBar = getActivity().findViewById(R.id.searchLocation);
+        searchBar.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if (i == EditorInfo.IME_ACTION_SEARCH) {
+                    performSearch();
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+
+    public void performSearch() {
+        searchBar.clearFocus();
+        InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        in.hideSoftInputFromWindow(searchBar.getWindowToken(), 0);
+        suggestedLocations.setVisibility(View.VISIBLE);
+    }
+
 
     @Override
     public void onExplanationNeeded(List<String> permissionsToExplain) {
@@ -105,14 +141,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Permiss
 
     public void goToUsersLocation() {
         LocationComponent locationComponent = mapboxMap.getLocationComponent();
-        double lat = locationComponent.getLastKnownLocation().getLatitude();
-        double lng = locationComponent.getLastKnownLocation().getLongitude();
-        CameraPosition position = new CameraPosition.Builder()
-                .target(new LatLng(lat, lng))
-                .zoom(15)
-                .tilt(20)
-                .build();
-        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000);
+        if (locationComponent.getLastKnownLocation() != null) {
+            double lat = locationComponent.getLastKnownLocation().getLatitude();
+            double lng = locationComponent.getLastKnownLocation().getLongitude();
+            CameraPosition position = new CameraPosition.Builder()
+                    .target(new LatLng(lat, lng))
+                    .zoom(15)
+                    .tilt(20)
+                    .build();
+            mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000);
+        }
     }
 
     @SuppressWarnings({"MissingPermission"})
@@ -125,13 +163,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Permiss
             locationComponent.setLocationComponentEnabled(true);
             locationComponent.setCameraMode(CameraMode.TRACKING);
             locationComponent.setRenderMode(RenderMode.COMPASS);
-            FloatingActionButton myLocation = getActivity().findViewById(R.id.floatingActionButton6);
-            myLocation.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    goToUsersLocation();
-                }
-            });
             goToUsersLocation();
             mapboxMap.addOnMapLongClickListener(new MapboxMap.OnMapLongClickListener() {
 
@@ -139,9 +170,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Permiss
                 public boolean onMapLongClick(@NonNull LatLng point) {
                     double clickLat = point.getLatitude();
                     double clickLong = point.getLongitude();
-
-
-
                     BottomSheetDialog bottomSheet = new BottomSheetDialog("Save Location (" + clickLat + "," + clickLong + ")");
                     bottomSheet.show(getActivity().getSupportFragmentManager(), "ModalBottomSheet");
                     return true;

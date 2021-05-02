@@ -2,7 +2,9 @@ package com.example.mapapp;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.example.mapapp.ui.bookmark.BookmarkFragment;
 import com.example.mapapp.ui.map.MapFragment;
@@ -77,5 +79,14 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         }
         return true;
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+            findViewById(R.id.recycler).setVisibility(View.GONE);
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }
