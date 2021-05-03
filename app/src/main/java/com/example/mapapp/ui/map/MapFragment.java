@@ -155,6 +155,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Permiss
     @Override
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
         this.mapboxMap = mapboxMap;
+        LocationAdapter locationAdapter = (LocationAdapter) suggestedLocations.getAdapter();
+        locationAdapter.setMapboxMap(mapboxMap);
         mapboxMap.setStyle(Style.MAPBOX_STREETS,
                 new Style.OnStyleLoaded() {
                     @Override

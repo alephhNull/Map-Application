@@ -29,11 +29,11 @@ public class Location {
 
 
     public Double getLatitude() {
-        return geometry.getCoordinates().get(0);
+        return geometry.getCoordinates().get(1);
     }
 
     public Double getLongtitude() {
-        return geometry.getCoordinates().get(1);
+        return geometry.getCoordinates().get(0);
     }
 
     public class Geometry {
