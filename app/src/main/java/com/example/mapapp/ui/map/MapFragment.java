@@ -197,7 +197,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Permiss
                 public boolean onMapLongClick(@NonNull LatLng point) {
                     double clickLat = point.getLatitude();
                     double clickLong = point.getLongitude();
-                    BottomSheetDialog bottomSheet = new BottomSheetDialog("Save Location (" + clickLat + "," + clickLong + ")");
+                    BottomSheetDialog bottomSheet = new BottomSheetDialog(clickLat, clickLong, threadPoolExecutor);
                     bottomSheet.show(getActivity().getSupportFragmentManager(), "ModalBottomSheet");
                     return true;
                 }

@@ -17,12 +17,12 @@ import java.util.ArrayList;
 
 public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHolder> {
 
-    private ArrayList<Location> data;
+    private ArrayList<BookmarkItem> data;
     private LayoutInflater inflater;
     private OnBookmarkListener listener;
     private Context context;
 
-    public BookmarkAdapter(ArrayList<Location> data, Context context, OnBookmarkListener listener) {
+    public BookmarkAdapter(ArrayList<BookmarkItem> data, Context context, OnBookmarkListener listener) {
         this.data = data;
         this.inflater = LayoutInflater.from(context);
         this.context = context;
@@ -37,7 +37,7 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Location location = data.get(position);
+        BookmarkItem location = data.get(position);
 
         holder.nameTxtView.setText(location.getName());
         holder.latTxtView.setText(String.valueOf(location.getLatitude()));

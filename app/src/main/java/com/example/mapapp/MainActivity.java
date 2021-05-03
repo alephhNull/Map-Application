@@ -7,6 +7,8 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.example.mapapp.ui.bookmark.BookmarkFragment;
+import com.example.mapapp.ui.bookmark.BookmarkItem;
+import com.example.mapapp.ui.map.Location;
 import com.example.mapapp.ui.map.MapFragment;
 import com.example.mapapp.ui.setting.SettingFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -26,8 +28,11 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
+    public static ArrayList<BookmarkItem> locations = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
