@@ -41,7 +41,7 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHo
 
         holder.nameTxtView.setText(location.getName());
         holder.latTxtView.setText(String.valueOf(location.getLatitude()));
-        holder.longTxtView.setText(String.valueOf(location.getLongitude()));
+        holder.longTxtView.setText(String.valueOf(location.getLongtitude()));
         holder.deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

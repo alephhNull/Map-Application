@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mapapp.R;
@@ -35,9 +37,14 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, PermissionsListener {
 
@@ -67,7 +74,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Permiss
         super.onResume();
         myLocation = getActivity().findViewById(R.id.floatingActionButton6);
         suggestedLocations = getActivity().findViewById(R.id.recycler);
+        suggestedLocations.setAdapter(new LocationAdapter());
+        suggestedLocations.setLayoutManager(new LinearLayoutManager(getActivity()));
+        suggestedLocations.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         searchButton = getActivity().findViewById(R.id.imageButton3);
+        searchBar = getActivity().findViewById(R.id.searchLocation);
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -80,7 +91,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Permiss
                 goToUsersLocation();
             }
         });
-        searchBar = getActivity().findViewById(R.id.searchLocation);
         searchBar.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
@@ -98,6 +108,23 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Permiss
         InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         in.hideSoftInputFromWindow(searchBar.getWindowToken(), 0);
         suggestedLocations.setVisibility(View.VISIBLE);
+        API_Interface searchService = RetrofitClient.getRetrofitInstance().create(API_Interface.class);
+        Call<API_Response> call = searchService.getResults(searchBar.getText().toString(), "sk.eyJ1IjoibWV0aHVzYWxlaCIsImEiOiJja254NXlqeGQxM2pxMnBuam1xbXZjYnZjIn0.VMRVou-KyyslhJefIYI3Cg");
+        threadPoolExecutor.execute(() -> call.enqueue(new Callback<API_Response>() {
+            @Override
+            public void onResponse(Call<API_Response> call, Response<API_Response> response) {
+                assert response.body() != null;
+                API_Response api_response = response.body();
+                LocationAdapter locationAdapter = (LocationAdapter) suggestedLocations.getAdapter();
+                locationAdapter.setSuggestedLocations((ArrayList<Location>) api_response.getResults());
+                locationAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure(Call<API_Response> call, Throwable t) {
+
+            }
+        }));
     }
 
 

@@ -11,7 +11,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mapapp.R;
 
+import java.util.ArrayList;
+
 public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.ViewHolder> {
+
+    private ArrayList<Location> suggestedLocations;
+
+    public void setSuggestedLocations(ArrayList<Location> suggestedLocations) {
+        this.suggestedLocations = suggestedLocations;
+    }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView placeText;
@@ -23,7 +31,6 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.ViewHo
             super(itemView);
             this.placeText = itemView.findViewById(R.id.placeText);
             this.placeName = itemView.findViewById(R.id.placeName);
-            this.placeType = itemView.findViewById(R.id.placeType);
             this.context = context;
             itemView.setOnClickListener(this);
         }
@@ -45,12 +52,15 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        //Todo
+        holder.placeText.setText(suggestedLocations.get(position).getText());
+        holder.placeName.setText(suggestedLocations.get(position).getName());
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        if(suggestedLocations == null)
+            return 0;
+        return suggestedLocations.size();
     }
 
 
