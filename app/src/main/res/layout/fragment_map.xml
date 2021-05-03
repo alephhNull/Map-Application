@@ -48,7 +48,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight="1"
-                    android:background="#FFFFFF"
+                    android:background="?android:attr/windowBackground"
                     android:src="?android:attr/actionModeWebSearchDrawable" />
 
             </LinearLayout>
@@ -62,14 +62,15 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:src="@android:drawable/ic_menu_mylocation"
-                app:backgroundTint="#FFFFFF"
+                app:backgroundTint="?android:attr/windowBackground"
+                app:tint="?android:colorPrimary"
                 app:fabCustomSize="60dp"
                 app:fabSize="normal"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.879"
-                app:maxImageSize="40dp" />
+                app:maxImageSize="40dp"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler"

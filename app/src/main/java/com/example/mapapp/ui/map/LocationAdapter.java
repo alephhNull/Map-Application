@@ -1,5 +1,6 @@
 package com.example.mapapp.ui.map;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,12 +11,19 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mapapp.R;
+import com.mapbox.mapboxsdk.annotations.Marker;
+import com.mapbox.mapboxsdk.annotations.MarkerOptions;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
+import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.maps.MapboxMap;
 
 import java.util.ArrayList;
 
 public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.ViewHolder> {
 
     private ArrayList<Location> suggestedLocations;
+    private MapboxMap mapboxMap;
 
     public void setSuggestedLocations(ArrayList<Location> suggestedLocations) {
         this.suggestedLocations = suggestedLocations;
@@ -37,7 +45,24 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.ViewHo
 
         @Override
         public void onClick(View view) {
-            //TODO
+            int position = getAdapterPosition();
+            double lat = suggestedLocations.get(position).getLatitude();
+            double lng = suggestedLocations.get(position).getLongtitude();
+            LatLng latLng = new LatLng(lat, lng);
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(latLng)
+                    .zoom(15)
+                    .tilt(20)
+                    .build();
+            mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000);
+            if (mapboxMap.getMarkers().size() == 0) {
+                mapboxMap.addMarker(new MarkerOptions()
+                        .position(latLng)
+                        .title(placeText.getText().toString()));
+            } else
+                mapboxMap.getMarkers().get(0).setPosition(latLng);
+            Activity activity = (Activity) context;
+            activity.findViewById(R.id.recycler).setVisibility(View.GONE);
         }
     }
 
@@ -63,5 +88,7 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.ViewHo
         return suggestedLocations.size();
     }
 
-
+    public void setMapboxMap(MapboxMap mapboxMap) {
+        this.mapboxMap = mapboxMap;
+    }
 }
