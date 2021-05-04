@@ -94,4 +94,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         }
         return super.onKeyDown(keyCode, event);
     }
+
+    @Override
+    protected void onNightModeChanged(int mode) {
+        super.onNightModeChanged(mode);
+    }
 }
