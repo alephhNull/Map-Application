@@ -1,5 +1,6 @@
 package com.example.mapapp.ui.map;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,7 +31,6 @@ public class BottomSheetDialog extends BottomSheetDialogFragment {
         clickLat = lat;
         clickLong = lon;
         this.threadPoolExecutor = threadPoolExecutor;
-        this.dbManager = DatabaseManager.getInstance(getContext());
     }
 
     @Nullable
@@ -41,9 +41,6 @@ public class BottomSheetDialog extends BottomSheetDialogFragment {
         EditText placeName = view.findViewById(R.id.save_location_modal_name_edit_txt);
         Button saveBtn = view.findViewById(R.id.save_location_modal_save_btn);
         saveBtn.setOnClickListener(view1 -> {
-            /*
-            //TODO: add on click listener for save button here
-             */
             dbManager.setTask(2);
             dbManager.setLocation(new BookmarkItem(placeName.getText().toString(), clickLat, clickLong));
             threadPoolExecutor.execute(dbManager);
@@ -51,5 +48,11 @@ public class BottomSheetDialog extends BottomSheetDialogFragment {
         });
         place.setText("Save Location (" + clickLat + "," + clickLong + ")");
         return view;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        this.dbManager = DatabaseManager.getInstance(getContext());
     }
 }

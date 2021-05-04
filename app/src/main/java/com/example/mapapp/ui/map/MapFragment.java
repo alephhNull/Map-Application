@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mapapp.R;
+import com.example.mapapp.database.DatabaseManager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
@@ -49,6 +50,7 @@ import retrofit2.Response;
 public class MapFragment extends Fragment implements OnMapReadyCallback, PermissionsListener {
 
     private PermissionsManager permissionsManager;
+    private DatabaseManager dbManager;
     private MapboxMap mapboxMap;
     private MapView mapView;
     private FloatingActionButton myLocation;
@@ -66,7 +68,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Permiss
         mapView = fragmentlayout.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         threadPoolExecutor.execute(() -> mapView.getMapAsync(this));
+        dbManager.setTask(1);
+        threadPoolExecutor.execute(dbManager);
         return fragmentlayout;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        dbManager = DatabaseManager.getInstance(context);
     }
 
     @Override
