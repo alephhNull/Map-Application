@@ -22,10 +22,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mapapp.R;
 import com.example.mapapp.database.DatabaseManager;
+import com.example.mapapp.ui.bookmark.BookmarkItem;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -218,5 +220,21 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Permiss
             permissionsManager = new PermissionsManager(this);
             permissionsManager.requestLocationPermissions(getActivity());
         }
+    }
+
+    public void zoomOnBookmarkedLocation (BookmarkItem location) {
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongtitude());
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(latLng)
+                .zoom(15)
+                .tilt(20)
+                .build();
+        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000);
+
+        if (mapboxMap.getMarkers().size() == 0) {
+            mapboxMap.addMarker(new MarkerOptions()
+                    .position(latLng));
+        } else
+            mapboxMap.getMarkers().get(0).setPosition(latLng);
     }
 }

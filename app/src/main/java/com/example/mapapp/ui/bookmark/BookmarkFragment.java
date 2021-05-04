@@ -4,22 +4,15 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.mapapp.MainActivity;
 import com.example.mapapp.R;
-import com.example.mapapp.ui.map.Location;
-
-import java.util.ArrayList;
+import com.example.mapapp.ui.map.MapFragment;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -42,6 +35,11 @@ public class BookmarkFragment extends Fragment implements BookmarkAdapter.OnBook
 
     @Override
     public void onClick(int position) {
-        //TODO:add listener for each row in recycler view
+        BookmarkItem location = MainActivity.locations.get(position);
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("map")).commit();
+        fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("bookmark")).commit();
+        MapFragment mapFragment = (MapFragment) fragmentManager.findFragmentByTag("map");
+        mapFragment.zoomOnBookmarkedLocation(location);
     }
 }
