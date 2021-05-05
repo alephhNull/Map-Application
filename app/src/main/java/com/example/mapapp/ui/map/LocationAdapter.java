@@ -46,6 +46,7 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.ViewHo
         @Override
         public void onClick(View view) {
             int position = getAdapterPosition();
+            String name = suggestedLocations.get(position).getName();
             double lat = suggestedLocations.get(position).getLatitude();
             double lng = suggestedLocations.get(position).getLongtitude();
             LatLng latLng = new LatLng(lat, lng);
@@ -59,8 +60,11 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.ViewHo
                 mapboxMap.addMarker(new MarkerOptions()
                         .position(latLng)
                         .title(placeText.getText().toString()));
-            } else
-                mapboxMap.getMarkers().get(0).setPosition(latLng);
+            } else {
+                Marker marker = mapboxMap.getMarkers().get(0);
+                marker.setPosition(latLng);
+                marker.setTitle(name);
+            }
             Activity activity = (Activity) context;
             activity.findViewById(R.id.recycler).setVisibility(View.GONE);
         }

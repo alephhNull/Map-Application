@@ -46,7 +46,7 @@ public class BottomSheetDialog extends BottomSheetDialogFragment {
             threadPoolExecutor.execute(dbManager);
             dismiss();
         });
-        place.setText("Save Location (" + clickLat + "," + clickLong + ")");
+        place.setText("Save Location " + "(" + String.format("\"%.2f\"", clickLat) + ", " + String.format("\"%.2f\"", clickLong) + ")" + " ?");
         return view;
     }
 

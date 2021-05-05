@@ -7,6 +7,7 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -41,6 +42,19 @@ public class BookmarkFragment extends Fragment implements BookmarkAdapter.OnBook
         View root = inflater.inflate(R.layout.fragment_bookmark, container, false);
         threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(5);
         RecyclerView recyclerView = root.findViewById(R.id.bookmark_recycler_view);
+        SearchView searchView = root.findViewById(R.id.search);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                bookmarkAdapter.getFilter().filter(s);
+                return false;
+            }
+        });
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         this.bookmarkAdapter = new BookmarkAdapter(MainActivity.locations, getContext(), this, threadPoolExecutor, uiHandler);
         recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
