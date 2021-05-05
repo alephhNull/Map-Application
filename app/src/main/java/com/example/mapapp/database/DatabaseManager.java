@@ -6,6 +6,8 @@ import android.os.Handler;
 import android.os.Message;
 
 import com.example.mapapp.MainActivity;
+import com.example.mapapp.ui.bookmark.BookmarkAdapter;
+import com.example.mapapp.ui.bookmark.BookmarkFragment;
 import com.example.mapapp.ui.bookmark.BookmarkItem;
 import com.example.mapapp.ui.map.Location;
 
@@ -18,6 +20,7 @@ public class DatabaseManager implements Runnable {
     private HashMap<BookmarkItem, String> id = new HashMap<>();
     private BookmarkItem location;
     private DatabaseHelper db;
+    private BookmarkFragment.UiHandler uiHandler;
     private static DatabaseManager dataBaseManager = null;
 
     private DatabaseManager(Context context) {
@@ -44,6 +47,9 @@ public class DatabaseManager implements Runnable {
                 break;
             case 3:
                 deleteFromDb(location);
+                Message msg = new Message();
+                msg.what = 1;
+                uiHandler.sendMessage(msg);
                 break;
         }
     }
@@ -80,5 +86,9 @@ public class DatabaseManager implements Runnable {
 
     public void setTask(int task) {
         this.task = task;
+    }
+
+    public void setUiHandler(BookmarkFragment.UiHandler uiHandler) {
+        this.uiHandler = uiHandler;
     }
 }

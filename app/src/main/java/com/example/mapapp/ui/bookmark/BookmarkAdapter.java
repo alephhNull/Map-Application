@@ -9,7 +9,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.mapapp.R;
+import com.example.mapapp.database.DatabaseManager;
+
 import java.util.ArrayList;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHolder> {
 
@@ -17,12 +20,16 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHo
     private LayoutInflater inflater;
     private OnBookmarkListener listener;
     private Context context;
+    private ThreadPoolExecutor tp;
+    private BookmarkFragment.UiHandler uiHandler;
 
-    public BookmarkAdapter(ArrayList<BookmarkItem> data, Context context, OnBookmarkListener listener) {
+    public BookmarkAdapter(ArrayList<BookmarkItem> data, Context context, OnBookmarkListener listener, ThreadPoolExecutor tp, BookmarkFragment.UiHandler uiHandler) {
         this.data = data;
         this.inflater = LayoutInflater.from(context);
         this.context = context;
         this.listener = listener;
+        this.tp = tp;
+        this.uiHandler = uiHandler;
     }
 
     @NonNull
@@ -34,6 +41,10 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         BookmarkItem location = data.get(position);
+        DatabaseManager dbManager = DatabaseManager.getInstance(context);
+        dbManager.setTask(3);
+        dbManager.setLocation(location);
+        dbManager.setUiHandler(uiHandler);
 
         holder.nameTxtView.setText(location.getName());
         holder.latTxtView.setText(String.valueOf(location.getLatitude()));
@@ -41,7 +52,7 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHo
         holder.deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO:add on click listener for delete btn
+                tp.execute(dbManager);
             }
         });
     }
@@ -78,5 +89,9 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHo
 
     public interface OnBookmarkListener {
         void onClick(int position);
+    }
+
+    public void setData(ArrayList<BookmarkItem> data) {
+        this.data = data;
     }
 }
