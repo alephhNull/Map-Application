@@ -70,7 +70,6 @@ public class DatabaseManager implements Runnable {
 
     private void deleteFromDb(BookmarkItem location) {
         db.deleteData(this.id.get(location));
-        this.id.remove(location);
         MainActivity.locations.remove(location);
     }
 

@@ -41,20 +41,11 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         BookmarkItem location = data.get(position);
-        DatabaseManager dbManager = DatabaseManager.getInstance(context);
-        dbManager.setTask(3);
-        dbManager.setLocation(location);
-        dbManager.setUiHandler(uiHandler);
 
+        holder.location = location;
         holder.nameTxtView.setText(location.getName());
         holder.latTxtView.setText(String.valueOf(location.getLatitude()));
         holder.longTxtView.setText(String.valueOf(location.getLongtitude()));
-        holder.deleteBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                tp.execute(dbManager);
-            }
-        });
     }
 
     @Override
@@ -69,6 +60,7 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHo
         TextView latTxtView;
         TextView longTxtView;
         ImageButton deleteBtn;
+        BookmarkItem location;
         OnBookmarkListener onBookmarkListener;
 
         public ViewHolder(@NonNull View itemView, OnBookmarkListener onBookmarkListener) {
@@ -79,6 +71,17 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHo
             deleteBtn = itemView.findViewById(R.id.bookmark_row_delete_btn);
             this.onBookmarkListener = onBookmarkListener;
             itemView.setOnClickListener(this);
+
+            deleteBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    DatabaseManager dbManager = DatabaseManager.getInstance(context);
+                    dbManager.setTask(3);
+                    dbManager.setLocation(location);
+                    dbManager.setUiHandler(uiHandler);
+                    tp.execute(dbManager);
+                }
+            });
         }
 
         @Override
