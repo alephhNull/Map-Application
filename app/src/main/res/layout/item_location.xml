@@ -12,7 +12,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:paddingTop="2dp"
-        app:srcCompat="@drawable/icons8_marker_24" />
+        app:srcCompat="@drawable/icons8_marker_24"
+        app:tint="?attr/colorOnSecondary" />
 
     <LinearLayout
         android:layout_width="match_parent"

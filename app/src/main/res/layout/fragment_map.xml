@@ -63,7 +63,7 @@
                 android:focusable="true"
                 android:src="@android:drawable/ic_menu_mylocation"
                 app:backgroundTint="?android:attr/windowBackground"
-                app:tint="?android:colorPrimary"
+                app:tint="?attr/colorPrimary"
                 app:fabCustomSize="60dp"
                 app:fabSize="normal"
                 app:layout_constraintBottom_toBottomOf="parent"

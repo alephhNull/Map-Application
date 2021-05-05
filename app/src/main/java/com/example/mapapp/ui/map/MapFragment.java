@@ -2,6 +2,8 @@ package com.example.mapapp.ui.map;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +28,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
@@ -65,7 +68,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Permiss
         getActivity().getSupportFragmentManager().beginTransaction().add(this, "map").commit();
         Mapbox.getInstance(getContext(), getString(R.string.mapbox_access_token));
         View fragmentlayout = inflater.inflate(R.layout.fragment_map, container, false);
-        threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(5);
+        threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
         mapView = fragmentlayout.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         threadPoolExecutor.execute(() -> mapView.getMapAsync(this));
@@ -90,10 +93,44 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Permiss
         suggestedLocations.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         searchButton = getActivity().findViewById(R.id.imageButton3);
         searchBar = getActivity().findViewById(R.id.searchLocation);
+        searchBar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence != null && charSequence.length() > 0)
+                    performSearch();
+                else {
+                    suggestedLocations.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        searchBar.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if (i == EditorInfo.IME_ACTION_SEARCH) {
+                    searchBar.clearFocus();
+                    InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    in.hideSoftInputFromWindow(searchBar.getWindowToken(), 0);
+                }
+                return false;
+            }
+
+        });
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                performSearch();
+                searchBar.clearFocus();
+                InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                in.hideSoftInputFromWindow(searchBar.getWindowToken(), 0);
             }
         });
         myLocation.setOnClickListener(new View.OnClickListener() {
@@ -102,22 +139,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Permiss
                 goToUsersLocation();
             }
         });
-        searchBar.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                if (i == EditorInfo.IME_ACTION_SEARCH) {
-                    performSearch();
-                    return true;
-                }
-                return false;
-            }
-        });
     }
 
     public void performSearch() {
-        searchBar.clearFocus();
-        InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        in.hideSoftInputFromWindow(searchBar.getWindowToken(), 0);
         suggestedLocations.setVisibility(View.VISIBLE);
         API_Interface searchService = RetrofitClient.getRetrofitInstance().create(API_Interface.class);
         Call<API_Response> call = searchService.getResults(searchBar.getText().toString(), "sk.eyJ1IjoibWV0aHVzYWxlaCIsImEiOiJja254NXlqeGQxM2pxMnBuam1xbXZjYnZjIn0.VMRVou-KyyslhJefIYI3Cg");
@@ -189,7 +213,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Permiss
                     .zoom(15)
                     .tilt(20)
                     .build();
-            mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000);
+            mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 2000);
         }
     }
 
@@ -217,6 +241,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Permiss
                         mapboxMap.getMarkers().get(0).setPosition(point);
                     BottomSheetDialog bottomSheet = new BottomSheetDialog(clickLat, clickLong, threadPoolExecutor);
                     bottomSheet.show(getActivity().getSupportFragmentManager(), "ModalBottomSheet");
+                    if (mapboxMap.getMarkers().size() == 0) {
+                        mapboxMap.addMarker(new MarkerOptions()
+                                .position(point));
+                    } else {
+                        Marker marker = mapboxMap.getMarkers().get(0);
+                        marker.setPosition(point);
+                    }
                     return true;
                 }
             });
@@ -228,6 +259,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Permiss
 
     public void zoomOnBookmarkedLocation (BookmarkItem location) {
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongtitude());
+        String name = location.getName();
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(latLng)
                 .zoom(15)
@@ -238,7 +270,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Permiss
         if (mapboxMap.getMarkers().size() == 0) {
             mapboxMap.addMarker(new MarkerOptions()
                     .position(latLng));
-        } else
-            mapboxMap.getMarkers().get(0).setPosition(latLng);
+        } else {
+            Marker marker = mapboxMap.getMarkers().get(0);
+            marker.setPosition(latLng);
+            marker.setTitle(name);
+        }
     }
 }

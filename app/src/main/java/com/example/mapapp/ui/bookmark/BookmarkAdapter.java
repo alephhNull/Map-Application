@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -14,7 +16,7 @@ import com.example.mapapp.database.DatabaseManager;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadPoolExecutor;
 
-public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHolder> {
+public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHolder> implements Filterable {
 
     private ArrayList<BookmarkItem> data;
     private LayoutInflater inflater;
@@ -22,6 +24,7 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHo
     private Context context;
     private ThreadPoolExecutor tp;
     private BookmarkFragment.UiHandler uiHandler;
+    private BookmarkFilter bookmarkFilter;
 
     public BookmarkAdapter(ArrayList<BookmarkItem> data, Context context, OnBookmarkListener listener, ThreadPoolExecutor tp, BookmarkFragment.UiHandler uiHandler) {
         this.data = data;
@@ -62,6 +65,13 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHo
         return data.size();
     }
 
+    @Override
+    public Filter getFilter() {
+        if (bookmarkFilter == null)
+            bookmarkFilter = new BookmarkFilter(data, this);
+        return bookmarkFilter;
+    }
+
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
@@ -76,7 +86,7 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHo
             nameTxtView = itemView.findViewById(R.id.bookmark_row_name);
             latTxtView = itemView.findViewById(R.id.bookmark_row_lat);
             longTxtView = itemView.findViewById(R.id.bookmark_row_long);
-            deleteBtn = itemView.findViewById(R.id.bookmark_row_delete_btn);
+            deleteBtn = itemView.findViewById(R.id.imageButton);
             this.onBookmarkListener = onBookmarkListener;
             itemView.setOnClickListener(this);
         }
