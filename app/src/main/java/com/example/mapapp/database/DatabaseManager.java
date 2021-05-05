@@ -38,6 +38,7 @@ public class DatabaseManager implements Runnable {
 
     @Override
     public void run() {
+        Message msg = new Message();
         switch (task) {
             case 1:
                 readFromDb();
@@ -47,11 +48,24 @@ public class DatabaseManager implements Runnable {
                 break;
             case 3:
                 deleteFromDb(location);
-                Message msg = new Message();
                 msg.what = 1;
                 uiHandler.sendMessage(msg);
                 break;
+            case 4:
+                deleteAllFromDb();
+                msg.what = 2;
+                uiHandler.sendMessage(msg);
+                break;
+            case 5:
+                deleteAllFromDb();
+                break;
         }
+    }
+
+    private void deleteAllFromDb() {
+        db.deleteAll();
+        this.id.clear();
+        MainActivity.locations.clear();
     }
 
     private void deleteFromDb(BookmarkItem location) {

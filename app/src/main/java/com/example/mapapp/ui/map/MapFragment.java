@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -56,7 +55,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Permiss
     private MapboxMap mapboxMap;
     private MapView mapView;
     private FloatingActionButton myLocation;
-    private ThreadPoolExecutor threadPoolExecutor;
+    public ThreadPoolExecutor threadPoolExecutor;
     private EditText searchBar;
     private RecyclerView suggestedLocations;
     private ImageButton searchButton;
@@ -211,6 +210,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Permiss
                 public boolean onMapLongClick(@NonNull LatLng point) {
                     double clickLat = point.getLatitude();
                     double clickLong = point.getLongitude();
+                    if (mapboxMap.getMarkers().size() == 0) {
+                        mapboxMap.addMarker(new MarkerOptions()
+                                .position(point));
+                    } else
+                        mapboxMap.getMarkers().get(0).setPosition(point);
                     BottomSheetDialog bottomSheet = new BottomSheetDialog(clickLat, clickLong, threadPoolExecutor);
                     bottomSheet.show(getActivity().getSupportFragmentManager(), "ModalBottomSheet");
                     return true;

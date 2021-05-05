@@ -27,7 +27,7 @@ public class BookmarkFragment extends Fragment implements BookmarkAdapter.OnBook
 
     private ThreadPoolExecutor threadPoolExecutor;
     private BookmarkAdapter bookmarkAdapter;
-    private UiHandler uiHandler;
+    public UiHandler uiHandler;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -87,12 +87,9 @@ public class BookmarkFragment extends Fragment implements BookmarkAdapter.OnBook
                     break;
                 case 2:
                     if (mWeakRefContext != null && mWeakRefContext.get() != null) {
-
-                    }
-                    break;
-                case 3:
-                    if (mWeakRefContext != null && mWeakRefContext.get() != null) {
-
+                        Toast.makeText(mWeakRefContext.get(), "history deleted", Toast.LENGTH_SHORT).show();
+                        bookmarkAdapter.setData(MainActivity.locations);
+                        bookmarkAdapter.notifyDataSetChanged();
                     }
                     break;
             }
