@@ -88,6 +88,8 @@ public class SettingFragment extends Fragment {
     public void onResume() {
         super.onResume();
         Switch switchButton = getActivity().findViewById(R.id.switch3);
+        int nightmode = AppCompatDelegate.getDefaultNightMode();
+        switchButton.setChecked(nightmode == AppCompatDelegate.MODE_NIGHT_YES);
         switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -95,7 +97,8 @@ public class SettingFragment extends Fragment {
                     AppCompatDelegate.setDefaultNightMode(
                             AppCompatDelegate.MODE_NIGHT_YES
                     );
-                }
+                } else
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
             }
         });
     }

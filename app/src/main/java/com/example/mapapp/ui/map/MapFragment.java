@@ -16,7 +16,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -55,7 +57,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Permiss
 
     private PermissionsManager permissionsManager;
     private DatabaseManager dbManager;
-    private MapboxMap mapboxMap;
+    private static MapboxMap mapboxMap;
+    public static BookmarkItem currentLocation;
     private MapView mapView;
     private FloatingActionButton myLocation;
     public ThreadPoolExecutor threadPoolExecutor;
@@ -65,8 +68,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Permiss
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        getActivity().getSupportFragmentManager().beginTransaction().add(this, "map").commit();
-        Mapbox.getInstance(getContext(), getString(R.string.mapbox_access_token));
         View fragmentlayout = inflater.inflate(R.layout.fragment_map, container, false);
         threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
         mapView = fragmentlayout.findViewById(R.id.mapView);
@@ -189,10 +190,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Permiss
 
     @Override
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
-        this.mapboxMap = mapboxMap;
+        MapFragment.mapboxMap = mapboxMap;
         LocationAdapter locationAdapter = (LocationAdapter) suggestedLocations.getAdapter();
         locationAdapter.setMapboxMap(mapboxMap);
-        mapboxMap.setStyle(Style.MAPBOX_STREETS,
+        String uri;
+        if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES)
+            uri = "mapbox://styles/mapbox/dark-v10";
+        else
+            uri = "mapbox://styles/mapbox/streets-v11";
+        mapboxMap.setStyle(new Style.Builder().fromUri(uri),
                 new Style.OnStyleLoaded() {
                     @Override
                     public void onStyleLoaded(@NonNull Style style) {
@@ -227,7 +233,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Permiss
             locationComponent.setLocationComponentEnabled(true);
             locationComponent.setCameraMode(CameraMode.TRACKING);
             locationComponent.setRenderMode(RenderMode.COMPASS);
-            goToUsersLocation();
+            if (currentLocation == null)
+                goToUsersLocation();
+            else
+                zoomOnBookmarkedLocation();
             mapboxMap.addOnMapLongClickListener(new MapboxMap.OnMapLongClickListener() {
 
                 @Override
@@ -257,9 +266,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Permiss
         }
     }
 
-    public void zoomOnBookmarkedLocation (BookmarkItem location) {
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongtitude());
-        String name = location.getName();
+    public static void zoomOnBookmarkedLocation () {
+        LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongtitude());
+        String name = currentLocation.getName();
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(latLng)
                 .zoom(15)
@@ -275,5 +284,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Permiss
             marker.setPosition(latLng);
             marker.setTitle(name);
         }
+        currentLocation = null;
     }
 }

@@ -9,6 +9,7 @@
         android:id="@+id/navigation_bookmark"
         android:name="com.example.mapapp.ui.bookmark.BookmarkFragment"
         android:label="@string/title_bookmark"
+
         tools:layout="@layout/fragment_map" />
 
     <fragment

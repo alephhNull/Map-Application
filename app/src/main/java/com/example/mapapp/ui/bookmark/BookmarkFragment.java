@@ -13,12 +13,17 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.mapapp.MainActivity;
 import com.example.mapapp.R;
+import com.example.mapapp.ui.map.Location;
 import com.example.mapapp.ui.map.MapFragment;
+import com.mapbox.mapboxsdk.maps.MapboxMap;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.Executors;
@@ -65,12 +70,11 @@ public class BookmarkFragment extends Fragment implements BookmarkAdapter.OnBook
     @Override
     public void onClick(int position) {
         BookmarkItem location = MainActivity.locations.get(position);
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("map")).commit();
-        fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("bookmark")).commit();
-        MapFragment mapFragment = (MapFragment) fragmentManager.findFragmentByTag("map");
-        mapFragment.zoomOnBookmarkedLocation(location);
+        NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
+        MapFragment.currentLocation = location;
+        navController.popBackStack(R.id.navigation_map, false);
     }
+    public static boolean zoom = false;
 
     public class UiHandler extends Handler {
         private WeakReference<Context> mWeakRefContext;

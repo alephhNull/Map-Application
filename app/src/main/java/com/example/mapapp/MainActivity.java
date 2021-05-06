@@ -30,60 +30,18 @@ import androidx.navigation.ui.NavigationUI;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity {
 
     public static ArrayList<BookmarkItem> locations = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
         setContentView(R.layout.activity_main);
         BottomNavigationView navView = findViewById(R.id.nav_view);
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupWithNavController(navView, navController);
-        navView.setOnNavigationItemSelectedListener(this);
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        FragmentManager fm = getSupportFragmentManager();
-        switch (item.getItemId()) {
-            case R.id.navigation_bookmark:
-                if (fm.findFragmentByTag("bookmark") != null) {
-                    fm.beginTransaction().show(fm.findFragmentByTag("bookmark")).commit();
-                } else {
-                    fm.beginTransaction().add(R.id.nav_host_fragment, BookmarkFragment.class, null, "bookmark").commit();
-                }
-                if (fm.findFragmentByTag("map") != null)
-                    fm.beginTransaction().hide(fm.findFragmentByTag("map")).commit();
-                if (fm.findFragmentByTag("setting") != null)
-                    fm.beginTransaction().hide(fm.findFragmentByTag("setting")).commit();
-                break;
-
-            case R.id.navigation_map:
-                if (fm.findFragmentByTag("map") != null) {
-                    fm.beginTransaction().show(fm.findFragmentByTag("map")).commit();
-                }
-                if (fm.findFragmentByTag("bookmark") != null)
-                    fm.beginTransaction().hide(fm.findFragmentByTag("bookmark")).commit();
-                if (fm.findFragmentByTag("setting") != null)
-                    fm.beginTransaction().hide(fm.findFragmentByTag("setting")).commit();
-                break;
-
-            case R.id.navigation_settings:
-                if (fm.findFragmentByTag("setting") != null) {
-                    fm.beginTransaction().show(fm.findFragmentByTag("setting")).commit();
-                } else {
-                    fm.beginTransaction().add(R.id.nav_host_fragment,  SettingFragment.class, null,"setting").commit();
-                }
-                if (fm.findFragmentByTag("map") != null)
-                    fm.beginTransaction().hide(fm.findFragmentByTag("map")).commit();
-                if (fm.findFragmentByTag("bookmark") != null)
-                    fm.beginTransaction().hide(fm.findFragmentByTag("bookmark")).commit();
-                break;
-
-        }
-        return true;
     }
 
     @Override
@@ -95,8 +53,4 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         return super.onKeyDown(keyCode, event);
     }
 
-    @Override
-    protected void onNightModeChanged(int mode) {
-        super.onNightModeChanged(mode);
-    }
 }
