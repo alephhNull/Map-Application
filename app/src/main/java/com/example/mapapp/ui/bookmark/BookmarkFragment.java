@@ -51,7 +51,7 @@ public class BookmarkFragment extends Fragment implements BookmarkAdapter.OnBook
 
             @Override
             public boolean onQueryTextChange(String s) {
-                bookmarkAdapter.getFilter().filter(s);
+                bookmarkAdapter.getFilter().filter(s.toUpperCase());
                 return false;
             }
         });

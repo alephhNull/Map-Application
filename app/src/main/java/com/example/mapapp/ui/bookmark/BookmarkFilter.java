@@ -2,7 +2,10 @@ package com.example.mapapp.ui.bookmark;
 
 import android.widget.Filter;
 
+import com.example.mapapp.MainActivity;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class BookmarkFilter extends Filter {
 
